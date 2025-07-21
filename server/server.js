@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true
+  credentials: true 
 };
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -20,7 +20,7 @@ app.use(express.json());
 const routes = require('./routes');
 app.use('/api', routes);
 
-// Initialize and connect to the database
+// Initialize and connect to the databasee
 initializeDatabase().catch(err => console.error('Failed to initialize database:', err));
 
 // Start server
