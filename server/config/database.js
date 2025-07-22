@@ -1,11 +1,12 @@
 const sql = require('mssql');
+require('dotenv').config();
 
 // SQL Server configuration
 const config = {
-  user: process.env.DB_USER || 'test', 
-  password: process.env.DB_PASS || '1',
-  server: process.env.DB_SERVER || 'YTSLTITD24',
-  database: process.env.DB_NAME || 'testsql1', 
+  user: process.env.DB_USER, 
+  password: process.env.DB_PASS,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_NAME, 
   port: parseInt(process.env.DB_PORT) || 1433,
   options: {
     encrypt: process.env.DB_ENCRYPT === 'true' || false,
@@ -26,7 +27,7 @@ const initializeDatabase = async () => {
       IF NOT EXISTS (
         SELECT * FROM sysobjects WHERE name='users' AND xtype='U'
       )
-      CREATE TABLE users (
+      CREATE TABLE users ( 
         id INT PRIMARY KEY IDENTITY(1,1),
         name NVARCHAR(100) NOT NULL,
         email NVARCHAR(100) UNIQUE NOT NULL,
@@ -85,16 +86,9 @@ const createSuperAdmin = async () => {
         VALUES (@name, @email, @password, @role)
       `);
       
-      console.log('✅ Super Admin created successfully!');
-      console.log(`📧 Email: ${adminEmail}`);
-      console.log(`🔑 Password: ${adminPassword}`);
-      console.log('⚠️  Please change the default password after first login!');
-    } else {
-      console.log('ℹ️  Super Admin already exists');
-    }
-  } catch (error) {
-    console.error('❌ Error creating super admin:', error);
-  }
+    
+    } 
+  } catch (error){}
 };
 
 // Graceful database shutdown

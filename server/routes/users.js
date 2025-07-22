@@ -1,6 +1,8 @@
 const express = require('express');
 const sql = require('mssql');
+const bcrypt = require('bcrypt');
 const { authenticateToken } = require('../middleware/auth');
+const { logActivity } = require('./activity');
 require('dotenv').config();
 
 const router = express.Router();
@@ -75,6 +77,11 @@ router.put('/profile', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Log profile update activity
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent');
+    await logActivity(userId, 'PROFILE_UPDATED', `Profile updated - Name: ${name}, Email: ${email}`, ipAddress, userAgent);
+
     res.json({
       message: 'Profile updated successfully',
       user: updateResult.recordset[0]
@@ -122,6 +129,85 @@ router.delete('/profile', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Account deletion error:', error);
     res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Change password endpoint
+router.put('/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    const userEmail = req.user.email;
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent');
+
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ error: 'New password must be different from current password' });
+    }
+
+    // Get current user data
+    const getUserRequest = new sql.Request();
+    getUserRequest.input('userId', sql.Int, userId);
+    const userResult = await getUserRequest.query('SELECT * FROM users WHERE id = @userId');
+    
+    if (userResult.recordset.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = userResult.recordset[0];
+
+    // For AD users, they might not have a local password
+    if (!user.password) {
+      await logActivity(userId, 'PASSWORD_CHANGE_FAILED', 'Attempted to change password for AD-managed account', ipAddress, userAgent);
+      return res.status(400).json({ error: 'Password changes not allowed for directory-managed accounts' });
+    }
+
+    // Verify current password
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      await logActivity(userId, 'PASSWORD_CHANGE_FAILED', 'Failed password change attempt - incorrect current password', ipAddress, userAgent);
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password
+    const updateRequest = new sql.Request();
+    updateRequest.input('userId', sql.Int, userId);
+    updateRequest.input('newPassword', sql.NVarChar, hashedNewPassword);
+    updateRequest.input('updatedAt', sql.DateTime, new Date());
+
+    const updateResult = await updateRequest.query(`
+      UPDATE users 
+      SET password = @newPassword, updated_at = @updatedAt
+      WHERE id = @userId
+    `);
+
+    if (updateResult.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Log successful password change
+    await logActivity(userId, 'PASSWORD_CHANGED', 'Password changed successfully', ipAddress, userAgent);
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Password change error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

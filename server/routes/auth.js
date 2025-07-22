@@ -2,6 +2,7 @@ const express = require('express');
 const sql = require('mssql');
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../middleware/auth');
+const { logActivity } = require('./activity');
 const ActiveDirectory = require('activedirectory2');
 
 const router = express.Router();
@@ -67,6 +68,11 @@ router.post('/register', async (req, res) => {
     
     const newUser = insertResult.recordset[0];
     const token = generateToken(newUser);
+
+    // Log registration activity
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent');
+    await logActivity(newUser.id, 'REGISTER', `Account registered for ${email}`, ipAddress, userAgent);
 
     res.status(201).json({
       message: 'User created successfully',
@@ -171,6 +177,11 @@ router.post('/login', async (req, res) => {
           // Generate JWT token
           const token = generateToken({ userId: user.id, email: user.email, role: user.role });
 
+          // Log successful login
+          const ipAddress = req.ip || req.connection.remoteAddress;
+          const userAgent = req.get('User-Agent');
+          await logActivity(user.id, 'LOGIN', `Successful login via Active Directory for ${email}`, ipAddress, userAgent);
+
           return res.json({
             token,
             user: {
@@ -217,6 +228,10 @@ router.post('/login', async (req, res) => {
       // Check password
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
+        // Log failed login attempt
+        const ipAddress = req.ip || req.connection.remoteAddress;
+        const userAgent = req.get('User-Agent');
+        await logActivity(user.id, 'LOGIN_FAILED', `Failed login attempt for ${email} - incorrect password`, ipAddress, userAgent);
         return res.status(400).json({ error: 'Invalid credentials' });
       }
 
@@ -224,6 +239,11 @@ router.post('/login', async (req, res) => {
 
       // Generate JWT token
       const token = generateToken({ userId: user.id, email: user.email, role: user.role });
+
+      // Log successful login
+      const ipAddress = req.ip || req.connection.remoteAddress;
+      const userAgent = req.get('User-Agent');
+      await logActivity(user.id, 'LOGIN', `Successful login via local authentication for ${email}`, ipAddress, userAgent);
 
       return res.json({
         token,

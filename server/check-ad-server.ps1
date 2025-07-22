@@ -1,4 +1,4 @@
-# PowerShell script to check Active Directory server status and connectivity
+
 # Run this script to diagnose AD server issues
 
 Write-Host "=== Active Directory Server Diagnostics ===" -ForegroundColor Cyan

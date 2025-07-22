@@ -11,7 +11,7 @@ router.get('/users', requireSuperAdmin, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
-    
+     
     res.json({
       message: 'Users retrieved successfully',
       users: result.recordset,

@@ -19,6 +19,10 @@ const Dashboard = () => {
     navigate('/security');
   };
 
+  const handleActivityClick = () => {
+    navigate('/activity');
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -55,8 +59,8 @@ const Dashboard = () => {
             
             <div className="feature-card">
               <h3>Activity Log</h3>
-              <p>View your recent account activity</p>
-              <button className="feature-button">View Activity</button>
+              <p>View your recent account activity and login times</p>
+              <button className="feature-button" onClick={handleActivityClick}>View Activity</button>
             </div>
             
             <div className="feature-card">

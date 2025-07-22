@@ -10,6 +10,11 @@ export const API_ENDPOINTS = {
   // User management
   PROFILE: `${API_BASE_URL}/users/profile`,
   USERS: `${API_BASE_URL}/users`,
+  CHANGE_PASSWORD: `${API_BASE_URL}/users/change-password`,
+  
+  // Activity logs
+  ACTIVITY_LOG: `${API_BASE_URL}/activity`,
+  ACTIVITY_SUMMARY: `${API_BASE_URL}/activity/summary`,
   
   // Utility
   HEALTH: `${API_BASE_URL}/health`,

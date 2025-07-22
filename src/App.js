@@ -1,4 +1,4 @@
-import React from 'react';
+//import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import Login from './Login';
@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import ProtectedRoute from './ProtectedRoute';
 import Profile from './components/Profile';
 import Security from './components/Security';
+import ActivityLog from './components/ActivityLog';
 import './App.css';
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
           <Route path="/security" element={
             <ProtectedRoute>
               <Security />
+            </ProtectedRoute>
+          } />
+          <Route path="/activity" element={
+            <ProtectedRoute>
+              <ActivityLog />
             </ProtectedRoute>
           } />
         </Routes>

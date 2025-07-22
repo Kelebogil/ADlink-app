@@ -1,0 +1,337 @@
+/* Activity Log Styles */
+.activity-log-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.activity-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.activity-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.activity-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Activity Summary */
+.activity-summary {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.summary-card h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+/* Activity Filter */
+.activity-filter {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-filter label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.activity-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: white;
+  font-size: 0.9rem;
+  min-width: 200px;
+}
+
+/* Activity List */
+.activity-list {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:hover {
+  background-color: #f8f9fa;
+}
+
+.activity-item.success {
+  border-left: 4px solid #28a745;
+}
+
+.activity-item.danger {
+  border-left: 4px solid #dc3545;
+}
+
+.activity-item.info {
+  border-left: 4px solid #007bff;
+}
+
+.activity-icon {
+  font-size: 1.5rem;
+  margin-right: 15px;
+  margin-top: 2px;
+}
+
+.activity-details {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.activity-description {
+  font-weight: 500;
+  color: #212529;
+  margin-bottom: 5px;
+  word-wrap: break-word;
+}
+
+.activity-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.activity-time {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.activity-ip {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
+.activity-user-agent {
+  margin-top: 5px;
+}
+
+.activity-user-agent small {
+  color: #adb5bd;
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
+.activity-type {
+  margin-left: 15px;
+}
+
+.activity-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.activity-badge.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.activity-badge.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.activity-badge.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Loading and Empty States */
+.loading-spinner {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.no-activities {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 20px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.pagination-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.pagination-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Security Tips */
+.security-tips {
+  background: #e7f3ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.security-tips h3 {
+  margin: 0 0 15px 0;
+  color: #0056b3;
+  font-size: 1.1rem;
+}
+
+.security-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.security-tips li {
+  margin-bottom: 8px;
+  color: #495057;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .activity-log-container {
+    padding: 15px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .activity-icon {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+
+  .activity-type {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
+  .activity-meta {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .activity-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .activity-filter select {
+    min-width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .activity-item {
+    padding: 12px 15px;
+  }
+
+  .summary-card {
+    padding: 15px;
+  }
+}
