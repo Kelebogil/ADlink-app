@@ -5,8 +5,8 @@ Write-Host "=== Active Directory Server Diagnostics ===" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuration
-$ADServer = "Test.local"
-$ADServerIP = "10.0.2.15"
+$ADServer = "Sharepoint.corp"
+$ADServerIP = "192.168.16.40"
 $LDAPPort = 389
 $LDAPSPort = 636
 

@@ -3,6 +3,8 @@ const sql = require('mssql');
 const bcrypt = require('bcrypt');
 const { requireSuperAdmin, requireAdmin } = require('../middleware/roleAuth');
 const { generateToken } = require('../middleware/auth');
+const adUserManager = require('../utils/adUserManager');
+const { logActivity } = require('./activity');
 
 const router = express.Router();
 
@@ -72,9 +74,38 @@ router.post('/users', requireSuperAdmin, async (req, res) => {
     
     const newUser = insertResult.recordset[0];
 
+    // Log user creation activity
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent');
+    await logActivity(req.user.id, 'ADMIN_USER_CREATED', `Admin created user: ${email} with role: ${role}`, ipAddress, userAgent);
+
+    // Create user in Active Directory if configured
+    let adCreationStatus = 'not_configured';
+    if (adUserManager.isADConfigured()) {
+      try {
+        await adUserManager.createADUser({
+          name,
+          email,
+          password // Use the plain password for AD creation
+        });
+        adCreationStatus = 'success';
+        await logActivity(req.user.id, 'AD_USER_CREATED', `Admin created AD user: ${email}`, ipAddress, userAgent);
+      } catch (adError) {
+        console.error('Failed to create user in AD:', adError.message);
+        adCreationStatus = 'failed';
+        await logActivity(req.user.id, 'AD_USER_CREATION_FAILED', `Failed to create AD user: ${adError.message}`, ipAddress, userAgent);
+        
+        // Optionally, you might want to delete the local user if AD creation fails
+        // Uncomment the following lines if you want this behavior:
+        // await new sql.Request().input('userId', sql.Int, newUser.id).query('DELETE FROM users WHERE id = @userId');
+        // return res.status(500).json({ error: 'Failed to create user in Active Directory. User creation cancelled.' });
+      }
+    }
+
     res.status(201).json({
       message: 'User created successfully',
-      user: newUser
+      user: newUser,
+      adStatus: adCreationStatus
     });
   } catch (error) {
     console.error('Create user error:', error);
@@ -160,7 +191,21 @@ router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
 
     const userToDelete = userResult.recordset[0];
 
-    // Delete user
+    // Delete user from Active Directory first (if configured)
+    let adDeletionStatus = 'not_configured';
+    if (adUserManager.isADConfigured()) {
+      try {
+        await adUserManager.deleteADUser(userToDelete.email);
+        adDeletionStatus = 'success';
+        await logActivity(req.user.id, 'AD_USER_DELETED', `Admin deleted AD user: ${userToDelete.email}`, req.ip, req.get('User-Agent'));
+      } catch (adError) {
+        console.error('Failed to delete user from AD:', adError.message);
+        adDeletionStatus = 'failed';
+        await logActivity(req.user.id, 'AD_USER_DELETION_FAILED', `Failed to delete AD user: ${adError.message}`, req.ip, req.get('User-Agent'));
+      }
+    }
+
+    // Delete user from local database
     const deleteRequest = new sql.Request();
     deleteRequest.input('userId', sql.Int, id);
     
@@ -170,6 +215,9 @@ router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Log local deletion
+    await logActivity(req.user.id, 'ADMIN_USER_DELETED', `Admin deleted user: ${userToDelete.email}`, req.ip, req.get('User-Agent'));
+
     res.json({ 
       message: 'User deleted successfully',
       deletedUser: {
@@ -177,7 +225,8 @@ router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
         name: userToDelete.name,
         email: userToDelete.email,
         role: userToDelete.role
-      }
+      },
+      adStatus: adDeletionStatus
     });
   } catch (error) {
     console.error('Delete user error:', error);

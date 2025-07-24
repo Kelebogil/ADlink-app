@@ -5,6 +5,7 @@ const readline = require('readline');
 const sql = require('mssql');
 const bcrypt = require('bcrypt');
 const { initializeDatabase } = require('./config/database');
+const adUserManager = require('./utils/adUserManager');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -205,7 +206,30 @@ Choose an option (1-7): `;
                 `);
                 
                 const newUser = result.recordset[0];
-                console.log(`✅ User created successfully: [${newUser.id}] ${newUser.name} (${newUser.role})`);
+                console.log(`✅ User created successfully in database: [${newUser.id}] ${newUser.name} (${newUser.role})`);
+                
+                // Create user in Active Directory if configured
+                if (adUserManager.isADConfigured()) {
+                  try {
+                    console.log('🔄 Creating user in Active Directory...');
+                    await adUserManager.createADUser({
+                      name,
+                      email,
+                      password // Use the plain password for AD creation
+                    });
+                    console.log(`✅ User also created successfully in Active Directory: ${email}`);
+                  } catch (adError) {
+                    console.log(`❌ Failed to create user in Active Directory: ${adError.message}`);
+                    console.log('   The user exists in the local database but not in AD.');
+                    console.log('   You may need to create them manually in AD or check your AD configuration.');
+                    
+                    // Optionally ask if they want to delete the local user
+                    // For now, we'll just warn and continue
+                  }
+                } else {
+                  console.log('ℹ️  Active Directory not configured - user created in local database only');
+                }
+                
                 resolve();
               } catch (error) {
                 console.error('❌ Error creating user:', error.message);

@@ -61,8 +61,8 @@ const initializeDatabase = async () => {
 const createSuperAdmin = async () => {
   try {
     const bcrypt = require('bcrypt');
-    const adminEmail = process.env.ADMIN_EMAIL || 'admin@authenticator.com';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'SuperAdmin123!';
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
     
     // Check if super admin already exists
     const checkRequest = new sql.Request();
@@ -76,7 +76,7 @@ const createSuperAdmin = async () => {
       const hashedPassword = await bcrypt.hash(adminPassword, saltRounds);
       
       const createRequest = new sql.Request();
-      createRequest.input('name', sql.NVarChar, 'Super Administrator');
+      createRequest.input('name', sql.NVarChar, '');
       createRequest.input('email', sql.NVarChar, adminEmail);
       createRequest.input('password', sql.NVarChar, hashedPassword);
       createRequest.input('role', sql.NVarChar, 'superadmin');

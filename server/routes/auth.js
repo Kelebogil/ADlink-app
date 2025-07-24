@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const { generateToken } = require('../middleware/auth');
 const { logActivity } = require('./activity');
 const ActiveDirectory = require('activedirectory2');
+const adUserManager = require('../utils/adUserManager');
 
 const router = express.Router();
 
@@ -74,10 +75,34 @@ router.post('/register', async (req, res) => {
     const userAgent = req.get('User-Agent');
     await logActivity(newUser.id, 'REGISTER', `Account registered for ${email}`, ipAddress, userAgent);
 
+    // Create user in Active Directory if configured
+    let adCreationStatus = 'not_configured';
+    if (adUserManager.isADConfigured()) {
+      try {
+        await adUserManager.createADUser({
+          name,
+          email,
+          password // Use the plain password for AD creation
+        });
+        adCreationStatus = 'success';
+        await logActivity(newUser.id, 'AD_USER_CREATED', `User created in Active Directory: ${email}`, ipAddress, userAgent);
+      } catch (adError) {
+        console.error('Failed to create user in AD:', adError.message);
+        adCreationStatus = 'failed';
+        await logActivity(newUser.id, 'AD_USER_CREATION_FAILED', `Failed to create user in AD: ${adError.message}`, ipAddress, userAgent);
+        
+        // Optionally, you might want to delete the local user if AD creation fails
+        // Uncomment the following lines if you want this behavior:
+        // await new sql.Request().input('userId', sql.Int, newUser.id).query('DELETE FROM users WHERE id = @userId');
+        // return res.status(500).json({ error: 'Failed to create user in Active Directory. Registration cancelled.' });
+      }
+    }
+
     res.status(201).json({
       message: 'User created successfully',
       token,
-      user: newUser
+      user: newUser,
+      adStatus: adCreationStatus
     });
   } catch (error) {
     console.error('Registration error:', error);
