@@ -1,6 +1,5 @@
 // Load environment variables
 require('dotenv').config();
-
 const ActiveDirectory = require('activedirectory2');
 
 // Active Directory configuration from .env

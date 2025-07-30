@@ -45,16 +45,16 @@ Copy `.env.example` to `.env` and configure the following:
 AUTH_METHOD=hybrid
 
 # Active Directory Configuration
-AD_URL=ldap://your-domain.local:389
-AD_BASE_DN=DC=your-domain,DC=local
-AD_USERNAME=your-service-account@your-domain.local
-AD_PASSWORD=your_service_account_password
-AD_DOMAIN=your-domain.local
+AD_URL=LDAP://192.168.16.40:389
+AD_BASE_DN=DC=Sharepoint,DC=corp
+AD_USERNAME=aa@Sharepoint.corp
+AD_PASSWORD=Yello100
+AD_DOMAIN=Sharepoint.corp
 
 # AD User Creation Settings
 AD_CREATE_USERS=true
-AD_CREATION_REQUIRED=false
-AD_USERS_OU=CN=Users,DC=your-domain,DC=local
+AD_CREATION_REQUIRED=true
+AD_USERS_OU=CN=Users,DC=Sharepoint.corp,DC=hybrid
 ```
 
 ### 4. Configuration Options Explained

@@ -1,6 +1,5 @@
 // Load environment variables
 require('dotenv').config();
-
 const adUserManager = require('./utils/adUserManager');
 
 console.log('🧪 Testing Active Directory User Creation');
