@@ -37,7 +37,7 @@ const initializeDatabase = async () => {
       );
     `);
     
-    // Add role column if it doesn't exist (for existing databases)
+   
     await request.query(`
       IF NOT EXISTS (
         SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
@@ -47,7 +47,7 @@ const initializeDatabase = async () => {
     `);
     console.log('Users table checked/created');
 
-    // Create super admin user if it doesn't exist
+   
     await createSuperAdmin();
 
     return true;
@@ -57,7 +57,6 @@ const initializeDatabase = async () => {
   }
 };
 
-// Create super admin user
 const createSuperAdmin = async () => {
   try {
     const bcrypt = require('bcrypt');

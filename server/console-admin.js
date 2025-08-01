@@ -30,7 +30,7 @@ class ConsoleAdmin {
         await this.showMainMenu();
       }
     } catch (error) {
-      console.error('❌ Failed to start admin console:', error.message);
+      console.error(' Failed to start admin console:', error.message);
     } finally {
       await sql.close();
       rl.close();
@@ -48,30 +48,30 @@ class ConsoleAdmin {
             const result = await request.query('SELECT * FROM users WHERE email = @email');
             
             if (result.recordset.length === 0) {
-              console.log('❌ Invalid credentials');
+              console.log(' Invalid credentials');
               return resolve();
             }
 
             const user = result.recordset[0];
             
             if (user.role !== 'superadmin') {
-              console.log('❌ Access denied. Super admin privileges required.');
+              console.log('Access denied. Super admin privileges required.');
               return resolve();
             }
 
             const isValidPassword = await bcrypt.compare(password, user.password);
             
             if (!isValidPassword) {
-              console.log('❌ Invalid credentials');
+              console.log(' Invalid credentials');
               return resolve();
             }
 
             this.isAuthenticated = true;
             this.currentUser = user;
-            console.log(`\n✅ Welcome, ${user.name}!\n`);
+            console.log(`\n Welcome, ${user.name}!\n`);
             resolve();
           } catch (error) {
-            console.error('❌ Authentication error:', error.message);
+            console.error(' Authentication error:', error.message);
             resolve();
           }
         });
@@ -117,7 +117,7 @@ Choose an option (1-7): `;
             console.log('👋 Goodbye!');
             return resolve();
           default:
-            console.log('❌ Invalid option. Please try again.');
+            console.log(' Invalid option. Please try again.');
         }
         
         if (choice !== '7') {
@@ -149,12 +149,12 @@ Choose an option (1-7): `;
       
       console.log(`\nTotal: ${result.recordset.length} users\n`);
     } catch (error) {
-      console.error('❌ Error listing users:', error.message);
+      console.error(' Error listing users:', error.message);
     }
   }
 
   async createUser() {
-    console.log('\n➕ Create New User:');
+    console.log('\n Create New User:');
     
     return new Promise((resolve) => {
       rl.question('👤 Name: ', (name) => {
