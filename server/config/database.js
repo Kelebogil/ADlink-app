@@ -33,7 +33,9 @@ const initializeDatabase = async () => {
         email NVARCHAR(100) UNIQUE NOT NULL,
         password NVARCHAR(255) NOT NULL,
         role NVARCHAR(20) DEFAULT 'user',
-        created_at DATETIME DEFAULT GETDATE()
+        status NVARCHAR(20) DEFAULT 'active',
+        created_at DATETIME DEFAULT GETDATE(),
+        updated_at DATETIME DEFAULT GETDATE()
       );
     `);
     
@@ -45,6 +47,25 @@ const initializeDatabase = async () => {
       )
       ALTER TABLE users ADD role NVARCHAR(20) DEFAULT 'user';
     `);
+    
+    // Add status column if it doesn't exist
+    await request.query(`
+      IF NOT EXISTS (
+        SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'status'
+      )
+      ALTER TABLE users ADD status NVARCHAR(20) DEFAULT 'active';
+    `);
+    
+    // Add updated_at column if it doesn't exist
+    await request.query(`
+      IF NOT EXISTS (
+        SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'updated_at'
+      )
+      ALTER TABLE users ADD updated_at DATETIME DEFAULT GETDATE();
+    `);
+    
     console.log('Users table checked/created');
 
    

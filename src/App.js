@@ -8,6 +8,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Profile from './components/Profile';
 import Security from './components/Security';
 import ActivityLog from './components/ActivityLog';
+import UserManagement from './components/UserManagement';
 import './App.css';
 
 function App() {
@@ -37,6 +38,11 @@ function App() {
           <Route path="/activity" element={
             <ProtectedRoute>
               <ActivityLog />
+            </ProtectedRoute>
+          } />
+          <Route path="/user-management" element={
+            <ProtectedRoute>
+              <UserManagement />
             </ProtectedRoute>
           } />
         </Routes>

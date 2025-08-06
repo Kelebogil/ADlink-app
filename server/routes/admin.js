@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/users', requireSuperAdmin, async (req, res) => {
   try {
     const request = new sql.Request();
-    const result = await request.query('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
+    const result = await request.query('SELECT id, name, email, role, status, created_at FROM users ORDER BY created_at DESC');
      
     res.json({
       message: 'Users retrieved successfully',
@@ -67,9 +67,9 @@ router.post('/users', requireSuperAdmin, async (req, res) => {
     insertRequest.input('role', sql.NVarChar, role);
     
     const insertResult = await insertRequest.query(`
-      INSERT INTO users (name, email, password, role) 
-      OUTPUT INSERTED.id, INSERTED.name, INSERTED.email, INSERTED.role, INSERTED.created_at
-      VALUES (@name, @email, @password, @role)
+      INSERT INTO users (name, email, password, role, status) 
+      OUTPUT INSERTED.id, INSERTED.name, INSERTED.email, INSERTED.role, INSERTED.status, INSERTED.created_at
+      VALUES (@name, @email, @password, @role, 'active')
     `);
     
     const newUser = insertResult.recordset[0];
@@ -117,7 +117,7 @@ router.post('/users', requireSuperAdmin, async (req, res) => {
 router.put('/users/:id', requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, role } = req.body;
+    const { name, email, role, status } = req.body;
 
     // Validate input
     if (!name || !email || !role) {
@@ -128,6 +128,12 @@ router.put('/users/:id', requireSuperAdmin, async (req, res) => {
     const validRoles = ['user', 'admin', 'superadmin'];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ error: 'Invalid role. Must be user, admin, or superadmin' });
+    }
+    
+    // Validate status if provided
+    const validStatuses = ['active', 'resigned', 'suspended'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be active, resigned, or suspended' });
     }
 
     // Check if email is already taken by another user
@@ -146,12 +152,14 @@ router.put('/users/:id', requireSuperAdmin, async (req, res) => {
     updateRequest.input('name', sql.NVarChar, name);
     updateRequest.input('email', sql.NVarChar, email);
     updateRequest.input('role', sql.NVarChar, role);
+    updateRequest.input('status', sql.NVarChar, status || 'active');
+    updateRequest.input('updatedAt', sql.DateTime, new Date());
     updateRequest.input('userId', sql.Int, id);
     
     const updateResult = await updateRequest.query(`
       UPDATE users 
-      SET name = @name, email = @email, role = @role 
-      OUTPUT INSERTED.id, INSERTED.name, INSERTED.email, INSERTED.role, INSERTED.created_at
+      SET name = @name, email = @email, role = @role, status = @status, updated_at = @updatedAt 
+      OUTPUT INSERTED.id, INSERTED.name, INSERTED.email, INSERTED.role, INSERTED.status, INSERTED.created_at
       WHERE id = @userId
     `);
     

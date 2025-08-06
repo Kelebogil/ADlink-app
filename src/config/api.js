@@ -16,6 +16,9 @@ export const API_ENDPOINTS = {
   ACTIVITY_LOG: `${API_BASE_URL}/activity`,
   ACTIVITY_SUMMARY: `${API_BASE_URL}/activity/summary`,
   
+  // Admin endpoints
+  ADMIN: `${API_BASE_URL}/admin`,
+  
   // Utility
   HEALTH: `${API_BASE_URL}/health`,
   INFO: `${API_BASE_URL}/info`,

@@ -1,0 +1,136 @@
+.user-management {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.user-management h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.user-management table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-management th,
+.user-management td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-management th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  letter-spacing: 0.5px;
+}
+
+.user-management tr:hover {
+  background-color: #f5f5f5;
+}
+
+.user-management select {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+}
+
+.user-management select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.user-management button {
+  padding: 5px 12px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.user-management button:first-of-type {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.user-management button:first-of-type:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.user-management button:last-of-type {
+  background-color: #dc3545;
+  color: white;
+}
+
+.user-management button:last-of-type:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.user-management button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.user-management td:last-child {
+  text-align: center;
+}
+
+/* Status badges */
+.user-management td:nth-child(5) {
+  font-weight: 500;
+  text-transform: capitalize;
+  color: #28a745;
+}
+
+.user-management tr:has(td:nth-child(5):contains("resigned")) td:nth-child(5) {
+  color: #dc3545;
+}
+
+.user-management tr:has(td:nth-child(5):contains("suspended")) td:nth-child(5) {
+  color: #ffc107;
+}
+
+/* Loading and error states */
+.user-management p {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-management {
+    padding: 10px;
+  }
+  
+  .user-management table {
+    font-size: 14px;
+  }
+  
+  .user-management th,
+  .user-management td {
+    padding: 8px 10px;
+  }
+  
+  .user-management button {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}

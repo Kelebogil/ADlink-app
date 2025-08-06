@@ -23,6 +23,10 @@ const Dashboard = () => {
     navigate('/activity');
   };
 
+  const handleUserManagementClick = () => {
+    navigate('/user-management');
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -68,6 +72,14 @@ const Dashboard = () => {
               <p>Manage your notification preferences</p>
               <button className="feature-button">Notifications</button>
             </div>
+            
+            {currentUser?.role === 'superadmin' && (
+              <div className="feature-card">
+                <h3>User Management</h3>
+                <p>Manage users, roles, and permissions</p>
+                <button className="feature-button" onClick={handleUserManagementClick}>Manage Users</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
