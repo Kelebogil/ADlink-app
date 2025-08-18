@@ -23,12 +23,12 @@ app.use('/api', routes);
 // Initialize and connect to the databasee
 initializeDatabase().catch(err => console.error('Failed to initialize database:', err));
 
-// Start server
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Graceful shutdown
+ shutdown
 process.on('SIGINT', () => {
   console.log('Shutting down server...');
   closeDatabase().then(() => {
